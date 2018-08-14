@@ -1,0 +1,53 @@
+---
+title: "Leaflet Mappery"
+author: "Andrew M."
+date: "8/13/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggmap)
+library(leaflet)
+library(dplyr)
+```
+
+## Haunts of Ernest Hemingway
+
+Behold this map showing places where renowned author Ernest Hemingway
+frequented -- a supremely useful demonstration of mapping in R.
+
+By the way, today's date is **August 13, 2018**.
+
+First, let's create a data frame with Hemingway data:
+
+```{r message=F}
+ehdata <- data.frame(
+  city = c('Oak Park, IL', 'Paris, France', 'Pamplona, Spain', 'Madrid, Spain',
+            'Havana, Cuba', 'Key West, Florida', 'Ketchum, ID'),
+  detail = c('Born, 1899', 'Writing of course', 'Bullfights, 1920s',
+             'Journalism, 1930s', 'Lived here 1940s-ish',
+             'House with lots of cats, 1940s', 'Died, 1961, A Moveable Feast sadly unfinished')
+)
+
+# Get locations from ggmap's geocode
+latlon <- geocode(as.character(ehdata$city)) %>% rename(lng = lon)
+ehdata <- cbind(ehdata, latlon)
+
+# Popup messages
+popup <- paste(ehdata$city, '<br>', ehdata$detail)
+```
+
+Now, the map. Click for fascinating biographical details!
+
+```{r message=F}
+ehdata %>% leaflet %>% addTiles() %>% addMarkers(popup=popup)
+```
+
+***
+
+**Sources:**
+
+"Places Where Hemingway Lived or Traveled," The New York Times, October 2015.
+https://www.nytimes.com/2015/10/04/travel/places-where-hemingway-lived-or-traveled.html
+
